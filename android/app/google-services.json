@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "370491190024",
+    "project_id": "wr-sfr",
+    "storage_bucket": "wr-sfr.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370491190024:android:999aea400b93870d385abd",
+        "android_client_info": {
+          "package_name": "com.example.wrap_safar_task"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcDqV6hWEwO70yMF2JW1MWp-iGqiczp28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

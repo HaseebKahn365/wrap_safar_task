@@ -1,5 +1,11 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:wrap_safar_task/firebase_options.dart';
 
 import 'home_page.dart';
 
@@ -66,13 +72,65 @@ class WrapSafarTheme extends ChangeNotifier {
   }
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize Google Mobile Ads SDK
+  MobileAds.instance.initialize();
+
+  // Add a dummy document to 123 collection to make sure Firestore is working
+  await FirebaseFirestore.instance
+      .collection('123')
+      .add({'test': 'data'})
+      .then((_) => log('document created'));
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => WrapSafarTheme(),
       child: const MyApp(),
     ),
   );
+}
+
+class RewardedAdManager {
+  RewardedAd? _rewardedAd;
+
+  void loadRewardedAd(Function onAdViewed) {
+    RewardedAd.load(
+      adUnitId: 'ca-app-pub-3940256099942544/5224354917', // Test Ad Unit ID
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (RewardedAd ad) {
+          _rewardedAd = ad;
+          _rewardedAd?.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (RewardedAd ad) {
+              ad.dispose();
+              loadRewardedAd(onAdViewed); // Reload the ad after it's dismissed
+            },
+            onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+              ad.dispose();
+            },
+          );
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          log('RewardedAd failed to load: $error');
+        },
+      ),
+    );
+  }
+
+  void showRewardedAd(Function onAdViewed) {
+    if (_rewardedAd != null) {
+      _rewardedAd?.show(
+        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+          onAdViewed(); // Execute the function when the ad is viewed
+        },
+      );
+    } else {
+      log('RewardedAd is not ready yet.');
+    }
+  }
 }
 
 class MyApp extends StatelessWidget {

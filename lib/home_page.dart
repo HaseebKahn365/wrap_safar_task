@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +12,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<WrapSafarTheme>(context);
+    final RewardedAdManager rewardedAdManager = RewardedAdManager();
 
     return AnimatedTheme(
       duration: const Duration(milliseconds: 300),
@@ -126,6 +129,21 @@ class HomePage extends StatelessWidget {
                             textColor: theme.onDarkBlue,
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 20),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            rewardedAdManager.loadRewardedAd(() {
+                              log('Rewarded ad viewed! Executing function...');
+                              // Add your custom function logic here
+                            });
+                            rewardedAdManager.showRewardedAd(() {
+                              log('Rewarded ad completed!');
+                            });
+                          },
+                          child: const Text('Show Rewarded Ad'),
+                        ),
                       ),
                     ],
                   ),
