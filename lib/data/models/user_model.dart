@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:wrap_safar_task/domain/entities/user_entitiy.dart';
 
 /*
 
@@ -47,4 +48,9 @@ class UserModel extends Equatable {
 
   @override
   List<Object?> get props => [userName, adsViewed, score];
+
+  //convert UserModel to UserEntitiy
+  UserEntitiy toEntity() {
+    return UserEntitiy(userName: userName, adsViewed: adsViewed, score: score);
+  }
 }

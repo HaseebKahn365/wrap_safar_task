@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:wrap_safar_task/domain/entities/user_entitiy.dart';
 import 'package:wrap_safar_task/domain/failures/user_entity_failures.dart';
 
 /*
@@ -26,6 +27,5 @@ abstract class UserEnitityRepo {
     int adsViewed,
     int score,
   );
-  Future<Either<UserEntityFailure, Map<String, dynamic>>>
-  getUserInfoFromSharedPrefs();
+  Future<Either<UserEntityFailure, UserEntitiy>> getUserInfoFromSharedPrefs();
 }

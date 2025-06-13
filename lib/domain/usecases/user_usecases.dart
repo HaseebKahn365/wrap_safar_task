@@ -14,6 +14,7 @@ abstract class UserEnitityRepo {
  */
 
 import 'package:dartz/dartz.dart';
+import 'package:wrap_safar_task/domain/entities/user_entitiy.dart';
 import 'package:wrap_safar_task/domain/failures/user_entity_failures.dart';
 import 'package:wrap_safar_task/domain/repositories/user_entity_repo.dart';
 
@@ -40,7 +41,7 @@ class GetUserInfoFromSharedPrefsUseCase {
 
   GetUserInfoFromSharedPrefsUseCase(this.repository);
 
-  Future<Either<UserEntityFailure, Map<String, dynamic>>> call() async {
+  Future<Either<UserEntityFailure, UserEntitiy>> call() async {
     return await repository.getUserInfoFromSharedPrefs();
   }
 }
