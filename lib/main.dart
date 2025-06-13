@@ -17,7 +17,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Enable Firebase Analytics Debug Mode (for development only)
-  await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+  FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
 
   // Initialize Google Mobile Ads SDK
   MobileAds.instance.initialize();
@@ -25,7 +25,7 @@ void main() async {
   rewardedAdManager.loadRewardedAd();
 
   // Add a dummy document to 123 collection to make sure Firestore is working
-  await FirebaseFirestore.instance
+  FirebaseFirestore.instance
       .collection('123')
       .add({'test': 'data'})
       .then((_) => log('document created'));

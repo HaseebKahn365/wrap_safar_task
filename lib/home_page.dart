@@ -2,17 +2,18 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tap_debouncer/tap_debouncer.dart';
+import 'package:wrap_safar_task/core/theme_provider.dart';
+import 'package:wrap_safar_task/services/rewarded_ad_manager.dart';
 
-import 'core/theme_provider.dart';
-import 'services/rewarded_ad_manager.dart';
 import 'widgets/buttons.dart'; // Import the new buttons
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<WrapSafarTheme>(context);
-    final RewardedAdManager rewardedAdManager = RewardedAdManager();
 
     return AnimatedTheme(
       duration: const Duration(milliseconds: 300),
@@ -132,13 +133,25 @@ class HomePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            rewardedAdManager.showRewardedAd(() {
+                        child: TapDebouncer(
+                          cooldown: const Duration(seconds: 2),
+                          onTap: () async {
+                            await rewardedAdManager.showRewardedAd(() {
                               log('Rewarded ad completed!');
                             });
                           },
-                          child: const Text('Show Rewarded Ad'),
+                          builder: (
+                            BuildContext context,
+                            TapDebouncerFunc? onTap,
+                          ) {
+                            return CustomElevatedButton(
+                              onPressed: onTap,
+                              text:
+                                  onTap == null
+                                      ? 'Loading Ad...'
+                                      : 'Show rewarded ad',
+                            );
+                          },
                         ),
                       ),
                     ],
