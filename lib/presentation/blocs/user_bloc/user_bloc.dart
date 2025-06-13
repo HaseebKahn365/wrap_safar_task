@@ -32,16 +32,29 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 
   void _onUserInfoSave(UserInfoSaveEvent event, Emitter<UserState> emit) async {
+    // Emit loading state before starting the save operation
+    emit(const UserLoading());
     final saveResult = await saveUserInfoUseCase(
       event.userName,
       event.adsViewed,
       event.score,
     );
-    emit(
-      saveResult.fold(
-        (failure) => UserError(message: failure.message),
-        (_) => const UserLoading(),
-      ),
+
+    await saveResult.fold(
+      (failure) async => emit(UserError(message: failure.message)),
+      (_) async {
+        // After successful save, refetch the user info to get the updated state
+        final userResult = await getUserInfoUseCase();
+        emit(
+          userResult.fold(
+            (failure) => UserError(
+              message: failure.message,
+            ), // Handle error during refetch
+            (user) =>
+                UserLoaded(user: user), // Emit UserLoaded with updated info
+          ),
+        );
+      },
     );
   }
 }
