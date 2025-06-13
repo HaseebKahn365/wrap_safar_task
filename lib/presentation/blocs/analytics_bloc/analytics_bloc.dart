@@ -1,7 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wrap_safar_task/domain/entities/anayltics_entity.dart';
 import 'package:wrap_safar_task/domain/repositories/analytics_enitity_repo.dart';
-import 'package:wrap_safar_task/presentation/analytics_bloc/analytics_event.dart';
-import 'package:wrap_safar_task/presentation/analytics_bloc/analytics_state.dart';
+import 'package:wrap_safar_task/presentation/blocs/analytics_bloc/analytics_event.dart';
+import 'package:wrap_safar_task/presentation/blocs/analytics_bloc/analytics_state.dart';
+import 'package:wrap_safar_task/services/analytics_service.dart';
 
 class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
   final AnalyticsEnitityRepo analyticsRepository;
@@ -34,9 +36,36 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
     Emitter<AnalyticsState> emit,
   ) async {
     emit(const AnalyticsLoading());
-    final result = await analyticsRepository.saveLogToSharedPrefs(
-      event.analyticsEntity,
-    );
+
+    final entity = event.analyticsEntity;
+
+    try {
+      // Log event to Firebase
+      switch (entity.analyticsType) {
+        case EventType.themeChange:
+          await AnalyticsService.logThemeChange(
+            entity.params['theme_mode'] == 'dark',
+          );
+          break;
+        case EventType.buttonClick:
+          await AnalyticsService.logButtonClick(
+            entity.params['button_name']?.toString() ?? 'unknown',
+            additionalParams: entity.params,
+          );
+          break;
+        case EventType.adEvent:
+          await AnalyticsService.logAdEvent(
+            entity.params['ad_event_type']?.toString() ?? 'unknown',
+            additionalParams: entity.params,
+          );
+          break;
+      }
+    } catch (e) {
+      emit(AnalyticsError('Failed to log event: ${e.toString()}'));
+      return;
+    }
+
+    final result = await analyticsRepository.saveLogToSharedPrefs(entity);
     result.fold(
       (failure) => emit(AnalyticsError(failure.message)),
       (_) => emit(const AnalyticsLogSaved()),

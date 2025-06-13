@@ -8,11 +8,6 @@ import 'package:equatable/equatable.dart';
 
 enum EventType { themeChange, buttonClick, adEvent }
 
-/*
-
-
- */
-
 class AnaylticsEntity extends Equatable {
   final EventType analyticsType;
   final Map<String, Object> params;

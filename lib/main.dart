@@ -10,7 +10,7 @@ import 'package:wrap_safar_task/firebase_options.dart';
 import 'package:wrap_safar_task/services/rewarded_ad_manager.dart';
 
 import 'core/theme_provider.dart';
-import 'widgets/home_page.dart';
+import 'presentation/widgets/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
