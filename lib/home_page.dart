@@ -8,6 +8,24 @@ import 'package:wrap_safar_task/services/rewarded_ad_manager.dart';
 
 import 'widgets/buttons.dart'; // Import the new buttons
 
+/*
+Purpose of the wrap_safar_task app:
+store username, number of ads viewed and score in the user entity
+store the type of event, success/fail status, additional infromation in the AnalyticsEntity
+
+User interface view:
+first display the username in a text field that saves the user name on submit
+then number of ads viewed
+then score for the number of ads viewed
+
+then a giant divider
+number of events logged, successful, failed
+
+then giant divider
+show rewarded ad button
+
+ */
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -54,7 +72,7 @@ class HomePage extends StatelessWidget {
 
             // Main content with proper margins and padding
             Padding(
-              padding: const EdgeInsets.only(top: 100.0),
+              padding: const EdgeInsets.only(top: 120.0),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 400),
                 decoration: BoxDecoration(
@@ -71,67 +89,57 @@ class HomePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 16.0),
-                      Text(
-                        'Explore the world with Wrap Safar',
-                        style: TextStyle(
-                          color: theme.onPureWhite, // Using theme textColor
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      // Username TextField
+                      TextField(
+                        decoration: InputDecoration(
+                          labelText: 'Username',
+                          border: OutlineInputBorder(),
                         ),
+                        onSubmitted: (value) {
+                          // TODO: Save username
+                        },
                       ),
-                      const SizedBox(height: 8.0),
+                      const SizedBox(height: 16.0),
+                      // Stats Display
                       Text(
-                        'Discover new places, cultures, and experiences.',
+                        'Ads Viewed: 0', // TODO: Replace with actual count
                         style: TextStyle(
-                          color: theme.onPureWhite.withOpacity(
-                            0.7,
-                          ), // Using theme textColor
+                          color: theme.onPureWhite,
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(height: 20.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          CustomOutlinedButton(
-                            borderColor: theme.darkBlue,
-                            onPressed: () {},
-                            text: 'Explore',
-                            textColor: theme.outlineLabel,
-                          ),
-                          CustomFilledButton(
-                            backgroundColor: theme.vividOrange,
-                            onPressed: () {},
-                            text: 'Book Now',
-                            textColor: Colors.white,
-                          ),
-                          CustomElevatedButton(
-                            backgroundColor: theme.skyBlue,
-                            onPressed: () {},
-                            text: 'Details',
-                            textColor: Colors.white,
-                          ),
-                        ],
+                      Text(
+                        'Score: 0', // TODO: Replace with actual score
+                        style: TextStyle(
+                          color: theme.onPureWhite,
+                          fontSize: 16,
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          CustomOutlinedButton(
-                            borderColor: theme.mintGreen,
-                            onPressed: () {},
-                            text: 'Nature',
-                            textColor: theme.onMintGreen,
-                          ),
-                          CustomFilledButton(
-                            backgroundColor: theme.darkBlue,
-                            onPressed: () {},
-                            text: 'Adventure',
-                            textColor: theme.onDarkBlue,
-                          ),
-                        ],
+                      const Divider(height: 40, thickness: 2),
+                      // Analytics Display
+                      Text(
+                        'Events Logged: 0', // TODO: Replace with actual count
+                        style: TextStyle(
+                          color: theme.onPureWhite,
+                          fontSize: 16,
+                        ),
                       ),
-                      const SizedBox(height: 20),
+                      Text(
+                        'Successful Events: 0', // TODO: Replace with actual count
+                        style: TextStyle(
+                          color: theme.onPureWhite,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        'Failed Events: 0', // TODO: Replace with actual count
+                        style: TextStyle(
+                          color: theme.onPureWhite,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const Divider(height: 40, thickness: 2),
+                      // Rewarded Ad Button
                       Center(
                         child: TapDebouncer(
                           cooldown: const Duration(seconds: 2),
