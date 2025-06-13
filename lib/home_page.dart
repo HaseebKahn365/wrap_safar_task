@@ -3,12 +3,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'main.dart';
+import 'core/theme_provider.dart';
+import 'services/rewarded_ad_manager.dart';
 import 'widgets/buttons.dart'; // Import the new buttons
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<WrapSafarTheme>(context);
@@ -134,10 +134,6 @@ class HomePage extends StatelessWidget {
                       Center(
                         child: ElevatedButton(
                           onPressed: () {
-                            rewardedAdManager.loadRewardedAd(() {
-                              log('Rewarded ad viewed! Executing function...');
-                              // Add your custom function logic here
-                            });
                             rewardedAdManager.showRewardedAd(() {
                               log('Rewarded ad completed!');
                             });
