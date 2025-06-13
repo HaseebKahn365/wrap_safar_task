@@ -146,11 +146,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(
       userResult.fold(
         (failure) => UserError(message: failure.message),
-        (user) => UserLoaded(
-          userName: user.userName,
-          adsViewed: user.adsViewed,
-          score: user.score,
-        ),
+        (user) => UserLoaded(user: user),
       ),
     );
   }

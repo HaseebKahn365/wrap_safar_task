@@ -1,6 +1,7 @@
 //only three states ie user loading, user loaded and user error
 
 import 'package:equatable/equatable.dart';
+import 'package:wrap_safar_task/domain/entities/user_entitiy.dart';
 
 abstract class UserState extends Equatable {
   const UserState();
@@ -13,18 +14,11 @@ class UserLoading extends UserState {
 }
 
 class UserLoaded extends UserState {
-  final String userName;
-  final int adsViewed;
-  final int score;
+  final UserEntitiy user;
 
-  const UserLoaded({
-    required this.userName,
-    required this.adsViewed,
-    required this.score,
-  });
-
+  const UserLoaded({required this.user});
   @override
-  List<Object?> get props => [userName, adsViewed, score];
+  List<Object?> get props => [user];
 }
 
 class UserError extends UserState {
