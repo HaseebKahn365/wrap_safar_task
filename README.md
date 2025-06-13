@@ -1,16 +1,17 @@
-# wrap_safar_task
+/*
+Purpose of the wrap_safar_task app:
+store username, number of ads viewed and score in the user entity
+store the type of event, success/fail status, additional infromation in the AnalyticsEntity
 
-A new Flutter project.
+User interface view:
+first display the username in a text field that saves the user name on submit
+then number of ads viewed
+then score for the number of ads viewed
 
-## Getting Started
+then a giant divider
+number of events logged, successful, failed
 
-This project is a starting point for a Flutter application.
+then giant divider
+show rewarded ad button
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+ */

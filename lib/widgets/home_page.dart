@@ -6,7 +6,7 @@ import 'package:tap_debouncer/tap_debouncer.dart';
 import 'package:wrap_safar_task/core/theme_provider.dart';
 import 'package:wrap_safar_task/services/rewarded_ad_manager.dart';
 
-import 'widgets/buttons.dart'; // Import the new buttons
+import 'buttons.dart'; // Import the new buttons
 
 /*
 Purpose of the wrap_safar_task app:
