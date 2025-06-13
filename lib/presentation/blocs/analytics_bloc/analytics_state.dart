@@ -17,7 +17,7 @@ class AnalyticsLoading extends AnalyticsState {
 }
 
 class AnalyticsLoaded extends AnalyticsState {
-  final List<AnaylticsEntity> logs;
+  final List<AnalyticsEntity> logs;
   const AnalyticsLoaded(this.logs);
 
   @override

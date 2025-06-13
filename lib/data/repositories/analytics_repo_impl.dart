@@ -11,7 +11,7 @@ class AnalyticsRepoImpl implements AnalyticsEnitityRepo {
   AnalyticsRepoImpl({required this.localDataSource});
 
   @override
-  Future<Either<AnalyticsEntityLoggingFailure, List<AnaylticsEntity>>>
+  Future<Either<AnalyticsEntityLoggingFailure, List<AnalyticsEntity>>>
   getAllLogsFromSharedPrefs() async {
     try {
       final analyticsModels = await localDataSource.getAllAnalytics();
@@ -19,7 +19,7 @@ class AnalyticsRepoImpl implements AnalyticsEnitityRepo {
       final analyticsEntities =
           analyticsModels
               .map(
-                (model) => AnaylticsEntity(
+                (model) => AnalyticsEntity(
                   analyticsType: model.analyticsType,
                   params: model.params,
                   isSuccess: model.isSuccess,
@@ -39,13 +39,13 @@ class AnalyticsRepoImpl implements AnalyticsEnitityRepo {
 
   @override
   Future<Either<AnalyticsEntityLoggingFailure, void>> saveLogToSharedPrefs(
-    AnaylticsEntity anaylticsEntity,
+    AnalyticsEntity anaylticsEntity,
   ) async {
     try {
       final analyticsModel = AnalyticsModel(
         analyticsType: anaylticsEntity.analyticsType,
         params: anaylticsEntity.params,
-        isSuccess: anaylticsEntity.isSuccess,
+        isSuccess: anaylticsEntity.isSuccess!,
       );
 
       await localDataSource.saveAnalytics(analyticsModel);

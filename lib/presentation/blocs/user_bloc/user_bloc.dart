@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wrap_safar_task/domain/usecases/user_usecases.dart';
 import 'package:wrap_safar_task/presentation/blocs/user_bloc/user_event.dart';
@@ -19,6 +21,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     UserInfoRequestedEvent event,
     Emitter<UserState> emit,
   ) async {
+    log('Requesting save for user infromation');
     final userResult = await getUserInfoUseCase();
     emit(
       userResult.fold(

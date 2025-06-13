@@ -1,92 +1,5 @@
-/*
-
-
-/*
-/*
-
-Purpose of the wrap_safar_task app:
-store username, number of ads viewed and score in the user entity
-store the type of event, success/fail status, additional infromation in the AnalyticsEntity */
-
-import 'package:equatable/equatable.dart';
-
-enum EventType { themeChange, buttonClick, adEvent }
-
-/*
-
-
- */
-
-class AnaylticsEntity extends Equatable {
-  final EventType analyticsType;
-  final Map<String, Object> params;
-  final bool isSuccess;
-
-  const AnaylticsEntity({
-    required this.analyticsType,
-    required this.params,
-    required this.isSuccess,
-  });
-
-  @override
-  List<Object?> get props => [analyticsType, params, isSuccess];
-}
-
- */
-
-//we should store the analytics enitity in the following manner:
-
-/*
-each analytics enitity will have a unique id assigned to it using uuid v4 
-the keys will be stored separately in the shared preferences under List<String> keys called analyticsKeys
-each analytics entity will be stored in the shared preferences as a json string with the key being the unique id
-
-while retrieving the analytics entities, we will first retrieve the keys from the shared preferences and then retrieve each entity using the key
-
- */
-
-import 'package:equatable/equatable.dart';
-import 'package:uuid/uuid.dart';
-import 'package:wrap_safar_task/domain/entities/anayltics_entity.dart';
-
-class AnalyticsModel extends Equatable {
-  final String id;
-  final EventType analyticsType;
-  final Map<String, Object> params;
-  final bool isSuccess;
-
-  AnalyticsModel({
-    required this.analyticsType,
-    required this.params,
-    required this.isSuccess,
-    String? id,
-  }) : id = id ?? const Uuid().v4();
-
-  @override
-  List<Object?> get props => [id, analyticsType, params, isSuccess];
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'analyticsType': analyticsType.toString(),
-    'params': params,
-    'isSuccess': isSuccess,
-  };
-
-  factory AnalyticsModel.fromJson(Map<String, dynamic> json) {
-    return AnalyticsModel(
-      id: json['id'] as String,
-      analyticsType: EventType.values.firstWhere(
-        (e) => e.toString() == json['analyticsType'],
-      ),
-      params: Map<String, Object>.from(json['params'] as Map),
-      isSuccess: json['isSuccess'] as bool,
-    );
-  }
-}
-
-*/
-
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wrap_safar_task/data/models/analytics_model.dart';
@@ -118,48 +31,62 @@ class LocalDataSourceImpl implements LocalDataSource {
 
   LocalDataSourceImpl(this._prefs);
 
-  // User Model Operations
   @override
   Future<void> saveUser(UserModel user) async {
+    log('Saving user to local storage: ${user.toString()}');
     final userJson = jsonEncode(user.toJson());
     await _prefs.setString(_userKey, userJson);
+    log('User saved successfully');
   }
 
   @override
   Future<UserModel?> getUser() async {
+    log('Fetching user from local storage');
     final userJson = _prefs.getString(_userKey);
-    if (userJson == null) return null;
+    if (userJson == null) {
+      log('No user found in local storage');
+      return null;
+    }
 
     try {
       final userMap = jsonDecode(userJson) as Map<String, dynamic>;
-      return UserModel.fromJson(userMap);
+      final user = UserModel.fromJson(userMap);
+      log('User retrieved successfully: ${user.toString()}');
+      return user;
     } catch (e) {
+      log('Error retrieving user: $e');
       return null;
     }
   }
 
   @override
   Future<void> updateUser(UserModel user) async {
+    log('Updating user in local storage: ${user.toString()}');
     await saveUser(user);
+    log('User updated successfully');
   }
 
   @override
   Future<void> deleteUser() async {
+    log('Deleting user from local storage');
     await _prefs.remove(_userKey);
+    log('User deleted successfully');
   }
 
-  // Analytics Model Operations
   @override
   Future<void> saveAnalytics(AnalyticsModel analytics) async {
+    log('Saving analytics: ${analytics.toString()}');
     List<String> keys = _prefs.getStringList(_analyticsKeysKey) ?? [];
     keys.add(analytics.id);
 
     await _prefs.setString(analytics.id, jsonEncode(analytics.toJson()));
     await _prefs.setStringList(_analyticsKeysKey, keys);
+    log('Analytics saved successfully');
   }
 
   @override
   Future<List<AnalyticsModel>> getAllAnalytics() async {
+    log('Fetching all analytics');
     List<String> keys = _prefs.getStringList(_analyticsKeysKey) ?? [];
     List<AnalyticsModel> analytics = [];
 
@@ -169,48 +96,67 @@ class LocalDataSourceImpl implements LocalDataSource {
         try {
           analytics.add(AnalyticsModel.fromJson(jsonDecode(analyticsJson)));
         } catch (e) {
+          log('Error parsing analytics with key $key: $e');
           continue;
         }
       }
     }
+    log('Retrieved ${analytics.length} analytics records');
     return analytics;
   }
 
   @override
   Future<AnalyticsModel?> getAnalyticsById(String id) async {
+    log('Fetching analytics with id: $id');
     final analyticsJson = _prefs.getString(id);
-    if (analyticsJson == null) return null;
+    if (analyticsJson == null) {
+      log('No analytics found with id: $id');
+      return null;
+    }
 
     try {
-      return AnalyticsModel.fromJson(jsonDecode(analyticsJson));
+      final analytics = AnalyticsModel.fromJson(jsonDecode(analyticsJson));
+      log('Analytics retrieved successfully: ${analytics.toString()}');
+      return analytics;
     } catch (e) {
+      log('Error retrieving analytics: $e');
       return null;
     }
   }
 
   @override
   Future<void> deleteAnalytics(String id) async {
+    log('Deleting analytics with id: $id');
     List<String> keys = _prefs.getStringList(_analyticsKeysKey) ?? [];
     keys.remove(id);
 
     await _prefs.remove(id);
     await _prefs.setStringList(_analyticsKeysKey, keys);
+    log('Analytics deleted successfully');
   }
 
   @override
   Future<void> deleteAllAnalytics() async {
+    log('Deleting all analytics');
     List<String> keys = _prefs.getStringList(_analyticsKeysKey) ?? [];
     for (String key in keys) {
       await _prefs.remove(key);
     }
     await _prefs.remove(_analyticsKeysKey);
+    log('All analytics deleted successfully');
   }
 
   @override
   Future<List<AnalyticsModel>> getAnalyticsByType(EventType eventType) async {
+    log('Fetching analytics by type: $eventType');
     final allAnalytics = await getAllAnalytics();
-    return allAnalytics
-        .where((analytics) => analytics.analyticsType == eventType)
-        .toList();
+    final filteredAnalytics =
+        allAnalytics
+            .where((analytics) => analytics.analyticsType == eventType)
+            .toList();
+    log(
+      'Found ${filteredAnalytics.length} analytics records for type $eventType',
+    );
+    return filteredAnalytics;
   }
 }

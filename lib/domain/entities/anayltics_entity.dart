@@ -8,15 +8,15 @@ import 'package:equatable/equatable.dart';
 
 enum EventType { themeChange, buttonClick, adEvent }
 
-class AnaylticsEntity extends Equatable {
+class AnalyticsEntity extends Equatable {
   final EventType analyticsType;
   final Map<String, Object> params;
-  final bool isSuccess;
+  final bool? isSuccess;
 
-  const AnaylticsEntity({
+  const AnalyticsEntity({
     required this.analyticsType,
     required this.params,
-    required this.isSuccess,
+    this.isSuccess = false,
   });
 
   @override

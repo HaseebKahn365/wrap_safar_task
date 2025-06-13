@@ -21,7 +21,7 @@ class GetAllLogsUseCase {
 
   GetAllLogsUseCase(this.repository);
 
-  Future<Either<AnalyticsEntityLoggingFailure, List<AnaylticsEntity>>>
+  Future<Either<AnalyticsEntityLoggingFailure, List<AnalyticsEntity>>>
   execute() {
     return repository.getAllLogsFromSharedPrefs();
   }
@@ -33,7 +33,7 @@ class SaveLogUseCase {
   SaveLogUseCase(this.repository);
 
   Future<Either<AnalyticsEntityLoggingFailure, void>> execute(
-    AnaylticsEntity anaylticsEntity,
+    AnalyticsEntity anaylticsEntity,
   ) {
     return repository.saveLogToSharedPrefs(anaylticsEntity);
   }

@@ -13,7 +13,7 @@ class LoadAnalyticsLogsEvent extends AnalyticsEvent {
 }
 
 class SaveAnalyticsLogEvent extends AnalyticsEvent {
-  final AnaylticsEntity analyticsEntity;
+  final AnalyticsEntity analyticsEntity;
   const SaveAnalyticsLogEvent(this.analyticsEntity);
 
   @override
