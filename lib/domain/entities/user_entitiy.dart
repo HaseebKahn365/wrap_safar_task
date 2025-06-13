@@ -18,4 +18,13 @@ class UserEntitiy extends Equatable {
 
   @override
   List<Object?> get props => [userName, adsViewed, score];
+
+  //copy with
+  UserEntitiy copyWith({String? userName, int? adsViewed, int? score}) {
+    return UserEntitiy(
+      userName: userName ?? this.userName,
+      adsViewed: adsViewed ?? this.adsViewed,
+      score: score ?? this.score,
+    );
+  }
 }
