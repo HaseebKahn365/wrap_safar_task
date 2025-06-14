@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wrap_safar_task/domain/entities/anayltics_entity.dart';
 import 'package:wrap_safar_task/domain/repositories/analytics_enitity_repo.dart';
@@ -37,32 +39,43 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
   ) async {
     emit(const AnalyticsLoading());
 
-    final entity = event.analyticsEntity;
+    var entity = event.analyticsEntity;
+    entity = entity.copyWith(isSuccess: true); // Initialize isSuccess to false
 
-    try {
-      // Log event to Firebase
-      switch (entity.analyticsType) {
-        case EventType.themeChange:
+    // Log event to Firebase
+    switch (entity.analyticsType) {
+      case EventType.themeChange:
+        try {
           await AnalyticsService.logThemeChange(
             entity.params['theme_mode'] == 'dark',
           );
-          break;
-        case EventType.buttonClick:
+        } catch (e) {
+          log('❌ Firebase Analytics: Failed to log theme change - $e');
+          entity = entity.copyWith(isSuccess: false);
+        }
+        break;
+      case EventType.buttonClick:
+        try {
           await AnalyticsService.logButtonClick(
             entity.params['button_name']?.toString() ?? 'unknown',
             additionalParams: entity.params,
           );
-          break;
-        case EventType.adEvent:
+        } catch (e) {
+          log('❌ Firebase Analytics: Failed to log button click - $e');
+          entity = entity.copyWith(isSuccess: false);
+        }
+        break;
+      case EventType.adEvent:
+        try {
           await AnalyticsService.logAdEvent(
             entity.params['ad_event_type']?.toString() ?? 'unknown',
             additionalParams: entity.params,
           );
-          break;
-      }
-    } catch (e) {
-      emit(AnalyticsError('Failed to log event: ${e.toString()}'));
-      return;
+        } catch (e) {
+          log('❌ Firebase Analytics: Failed to log ad event - $e');
+          entity = entity.copyWith(isSuccess: false);
+        }
+        break;
     }
 
     final result = await analyticsRepository.saveLogToSharedPrefs(entity);

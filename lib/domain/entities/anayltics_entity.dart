@@ -19,6 +19,19 @@ class AnalyticsEntity extends Equatable {
     this.isSuccess = false,
   });
 
+  //copy with
+  AnalyticsEntity copyWith({
+    EventType? analyticsType,
+    Map<String, Object>? params,
+    bool? isSuccess,
+  }) {
+    return AnalyticsEntity(
+      analyticsType: analyticsType ?? this.analyticsType,
+      params: params ?? this.params,
+      isSuccess: isSuccess ?? this.isSuccess,
+    );
+  }
+
   @override
   List<Object?> get props => [analyticsType, params, isSuccess];
 }

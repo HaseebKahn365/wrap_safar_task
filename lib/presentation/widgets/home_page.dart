@@ -12,6 +12,7 @@ import 'package:wrap_safar_task/presentation/blocs/analytics_bloc/analytics_stat
 import 'package:wrap_safar_task/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:wrap_safar_task/presentation/blocs/user_bloc/user_event.dart';
 import 'package:wrap_safar_task/presentation/blocs/user_bloc/user_state.dart';
+import 'package:wrap_safar_task/presentation/widgets/logs_screen.dart';
 import 'package:wrap_safar_task/services/rewarded_ad_manager.dart';
 
 import 'buttons.dart'; // Import the new buttons
@@ -167,7 +168,10 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment:
                           MainAxisAlignment.start, // Adjusted for better layout
                       children: [
-                        const SizedBox(height: 16.0),
+                        Center(
+                          child: Text('username', textAlign: TextAlign.center),
+                        ),
+                        const SizedBox(height: 8.0),
                         BlocBuilder<UserBloc, UserState>(
                           builder: (context, state) {
                             String currentUsername = '';
@@ -364,39 +368,43 @@ class _HomePageState extends State<HomePage> {
 
                             if (state is AnalyticsLoaded) {
                               eventsLogged = state.logs.length;
-                              // You might want to iterate through logs to count successful/failed
-                              // For now, just showing total logs.
+
+                              // logic for extracting successful logs
+                              for (var log in state.logs) {
+                                if (log.isSuccess ?? false) {
+                                  successfulEvents++;
+                                } else {
+                                  failedEvents++;
+                                }
+                              }
                             } else if (state is AnalyticsLoading &&
                                 state is! AnalyticsInitial) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
+                              return const Center(child: SizedBox(height: 200));
                             }
 
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                Text(
-                                  'Events Logged: $eventsLogged',
-                                  style: TextStyle(
-                                    color: theme.onPureWhite,
-                                    fontSize: 16,
-                                  ),
+                                _buildDashboardCard(
+                                  theme: theme,
+                                  icon: Icons.list_alt,
+                                  label: 'Events Logged',
+                                  value: eventsLogged.toString(),
+                                  color: theme.themeData.colorScheme.primary,
                                 ),
-                                // Placeholder for successful/failed events
-                                Text(
-                                  'Successful Events: $successfulEvents',
-                                  style: TextStyle(
-                                    color: theme.onPureWhite,
-                                    fontSize: 16,
-                                  ),
+                                _buildDashboardCard(
+                                  theme: theme,
+                                  icon: Icons.check_circle,
+                                  label: 'Logged to Firebase Analytics',
+                                  value: successfulEvents.toString(),
+                                  color: theme.themeData.colorScheme.secondary,
                                 ),
-                                Text(
-                                  'Failed Events: $failedEvents',
-                                  style: TextStyle(
-                                    color: theme.onPureWhite,
-                                    fontSize: 16,
-                                  ),
+                                _buildDashboardCard(
+                                  theme: theme,
+                                  icon: Icons.error,
+                                  label: 'Failed to Log',
+                                  value: failedEvents.toString(),
+                                  color: theme.themeData.colorScheme.error,
                                 ),
                               ],
                             );
@@ -474,24 +482,45 @@ class _HomePageState extends State<HomePage> {
                         ),
                         const SizedBox(height: 20),
                         Center(
-                          child: CustomElevatedButton(
+                          child: CustomFilledButton(
                             onPressed: () {
-                              context.read<AnalyticsBloc>().add(
-                                const DeleteAllAnalyticsLogsEvent(),
-                              );
-                              context.read<AnalyticsBloc>().add(
-                                SaveAnalyticsLogEvent(
-                                  AnalyticsEntity(
-                                    analyticsType: EventType.buttonClick,
-                                    params: {
-                                      'button_name': 'delete_analytics_logs',
-                                    },
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder:
+                                      (
+                                        context,
+                                        animation,
+                                        secondaryAnimation,
+                                      ) => const LogsScreen(),
+                                  transitionsBuilder: (
+                                    context,
+                                    animation,
+                                    secondaryAnimation,
+                                    child,
+                                  ) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.easeIn;
+                                    var tween = Tween(
+                                      begin: begin,
+                                      end: end,
+                                    ).chain(CurveTween(curve: curve));
+                                    var offsetAnimation = animation.drive(
+                                      tween,
+                                    );
+                                    return SlideTransition(
+                                      position: offsetAnimation,
+                                      child: child,
+                                    );
+                                  },
+                                  transitionDuration: const Duration(
+                                    milliseconds: 500,
                                   ),
                                 ),
                               );
                             },
-                            text: 'Delete All Analytics Logs',
-                            backgroundColor: Colors.redAccent,
+                            text: 'View Logs',
                           ),
                         ),
                       ],
@@ -501,6 +530,51 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashboardCard({
+    required WrapSafarTheme theme,
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12.0),
+          border: Border.all(color: color.withOpacity(0.5), width: 1.0),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(icon, size: 36.0, color: color),
+            const SizedBox(height: 8.0),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                color: theme.themeData.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 4.0),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14.0,
+                color: theme.themeData.colorScheme.onSurface.withOpacity(0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
