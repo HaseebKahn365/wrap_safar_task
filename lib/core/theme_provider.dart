@@ -41,12 +41,15 @@ class WrapSafarTheme extends ChangeNotifier {
       _isDarkMode
           ? Color(0xFFE0F7FF)
           : Color(0xFF002438); // very dark text for bright blue
-
   ThemeData get themeData => ThemeData(
     brightness: _isDarkMode ? Brightness.dark : Brightness.light,
     primaryColor: pureWhite,
     scaffoldBackgroundColor: darkBlue,
     cardColor: pureWhite,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.blue,
+      brightness: _isDarkMode ? Brightness.dark : Brightness.light,
+    ),
     appBarTheme: AppBarTheme(
       backgroundColor: darkBlue,
       foregroundColor: Colors.white,

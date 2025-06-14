@@ -172,47 +172,87 @@ class _HomePageState extends State<HomePage> {
                           builder: (context, state) {
                             String currentUsername = '';
                             if (state is UserLoaded) {
-                              currentUsername = state.user.userName;
-                              // Ensure controller is updated if state changes elsewhere
-                              if (_usernameController.text != currentUsername) {
-                                _usernameController.text = currentUsername;
-                              }
+                              currentUsername =
+                                  state.user.userName == ''
+                                      ? 'No username set'
+                                      : state.user.userName;
                             }
-                            return TextField(
-                              controller: _usernameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Username',
-                                border: OutlineInputBorder(),
+                            return Center(
+                              child: TextButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder:
+                                        (context) => AlertDialog(
+                                          title: const Text('Change Username'),
+                                          content: TextField(
+                                            controller: _usernameController,
+                                            decoration: const InputDecoration(
+                                              labelText: 'New Username',
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed:
+                                                  () => Navigator.pop(context),
+                                              child: const Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                final value =
+                                                    _usernameController.text;
+                                                final currentState =
+                                                    context
+                                                        .read<UserBloc>()
+                                                        .state;
+                                                int adsViewed = 0;
+                                                int score = 0;
+                                                if (currentState
+                                                    is UserLoaded) {
+                                                  adsViewed =
+                                                      currentState
+                                                          .user
+                                                          .adsViewed;
+                                                  score =
+                                                      currentState.user.score;
+                                                }
+
+                                                context.read<UserBloc>().add(
+                                                  UserInfoSaveEvent(
+                                                    userName: value,
+                                                    adsViewed: adsViewed,
+                                                    score: score,
+                                                  ),
+                                                );
+                                                context
+                                                    .read<AnalyticsBloc>()
+                                                    .add(
+                                                      SaveAnalyticsLogEvent(
+                                                        AnalyticsEntity(
+                                                          analyticsType:
+                                                              EventType
+                                                                  .buttonClick,
+                                                          params: {
+                                                            'button_name':
+                                                                'save_username',
+                                                            'username': value,
+                                                          },
+                                                        ),
+                                                      ),
+                                                    );
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('Save'),
+                                            ),
+                                          ],
+                                        ),
+                                  );
+                                },
+                                child: Text(
+                                  currentUsername,
+                                  style: TextStyle(fontSize: 32),
+                                ),
                               ),
-                              onSubmitted: (value) {
-                                final currentState =
-                                    context.read<UserBloc>().state;
-                                int adsViewed = 0;
-                                int score = 0;
-                                if (currentState is UserLoaded) {
-                                  adsViewed = currentState.user.adsViewed;
-                                  score = currentState.user.score;
-                                }
-                                context.read<UserBloc>().add(
-                                  UserInfoSaveEvent(
-                                    userName: value,
-                                    adsViewed:
-                                        adsViewed, // Preserve existing values
-                                    score: score, // Preserve existing values
-                                  ),
-                                );
-                                context.read<AnalyticsBloc>().add(
-                                  SaveAnalyticsLogEvent(
-                                    AnalyticsEntity(
-                                      analyticsType: EventType.buttonClick,
-                                      params: {
-                                        'button_name': 'save_username',
-                                        'username': value,
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
                             );
                           },
                         ),
@@ -229,21 +269,83 @@ class _HomePageState extends State<HomePage> {
                                 child: CircularProgressIndicator(),
                               );
                             }
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Text(
-                                  'Ads Viewed: $adsViewed',
-                                  style: TextStyle(
-                                    color: theme.onPureWhite,
-                                    fontSize: 16,
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        theme
+                                            .themeData
+                                            .colorScheme
+                                            .primaryContainer,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'Ads Viewed',
+                                        style: TextStyle(
+                                          color:
+                                              theme
+                                                  .themeData
+                                                  .colorScheme
+                                                  .onPrimaryContainer,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        adsViewed.toString(),
+                                        style: TextStyle(
+                                          color:
+                                              theme
+                                                  .themeData
+                                                  .colorScheme
+                                                  .onPrimaryContainer,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                Text(
-                                  'Score: $score',
-                                  style: TextStyle(
-                                    color: theme.onPureWhite,
-                                    fontSize: 16,
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: theme.vividOrange.withOpacity(0.7),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        '     Score     ',
+                                        style: TextStyle(
+                                          color:
+                                              theme
+                                                  .themeData
+                                                  .colorScheme
+                                                  .onSecondaryContainer,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        score.toString(),
+                                        style: TextStyle(
+                                          color:
+                                              theme
+                                                  .themeData
+                                                  .colorScheme
+                                                  .onSecondaryContainer,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -257,10 +359,8 @@ class _HomePageState extends State<HomePage> {
                         BlocBuilder<AnalyticsBloc, AnalyticsState>(
                           builder: (context, state) {
                             int eventsLogged = 0;
-                            int successfulEvents =
-                                0; // Assuming you might add this logic
-                            int failedEvents =
-                                0; // Assuming you might add this logic
+                            int successfulEvents = 0;
+                            int failedEvents = 0;
 
                             if (state is AnalyticsLoaded) {
                               eventsLogged = state.logs.length;
