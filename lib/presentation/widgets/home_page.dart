@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
+import 'package:uuid/v4.dart';
 import 'package:wrap_safar_task/core/theme_provider.dart';
 import 'package:wrap_safar_task/domain/entities/anayltics_entity.dart';
 import 'package:wrap_safar_task/presentation/blocs/analytics_bloc/analytics_bloc.dart';
@@ -467,6 +468,16 @@ class _HomePageState extends State<HomePage> {
                                     content: Text(
                                       'User data not loaded yet. Please try again.',
                                     ),
+                                  ),
+                                );
+
+                                //trigger a new user saving event to generate a guest user
+                                context.read<UserBloc>().add(
+                                  UserInfoSaveEvent(
+                                    userName:
+                                        'Guest${UuidV4().toString().substring(0, 8)}',
+                                    adsViewed: 0,
+                                    score: 0,
                                   ),
                                 );
                               }

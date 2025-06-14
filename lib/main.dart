@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'package:wrap_safar_task/firebase_options.dart';
 import 'package:wrap_safar_task/presentation/blocs/analytics_bloc/analytics_bloc.dart';
 import 'package:wrap_safar_task/presentation/blocs/user_bloc/user_bloc.dart';
-import 'package:wrap_safar_task/services/rewarded_ad_manager.dart';
 
 import 'core/theme_provider.dart';
 import 'injection_container.dart' as di; // Import the dependency injector
@@ -31,8 +30,6 @@ void main() async {
 
   // Initialize Google Mobile Ads SDK
   MobileAds.instance.initialize();
-
-  rewardedAdManager.loadRewardedAd();
 
   runApp(
     MultiProvider(
