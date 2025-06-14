@@ -419,6 +419,11 @@ class _HomePageState extends State<HomePage> {
                             cooldown: const Duration(seconds: 2),
                             onTap: () async {
                               final userState = context.read<UserBloc>().state;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Ad requested, Please wait'),
+                                ),
+                              );
                               if (userState is UserLoaded) {
                                 await rewardedAdManager.showRewardedAd(() {
                                   log('Rewarded ad completed!');
